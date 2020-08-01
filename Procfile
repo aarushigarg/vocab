@@ -1,1 +1,1 @@
-web: gunicorn app:syn_dict
+web: gunicorn app:app
