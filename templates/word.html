@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{word}}</title>
+</head>
+<body>
+    <h1>Word: {{word}}</h1>
+    {% for synset in synsets %}
+        <h3>Type: {{synset.part_of_speech}}</h3>
+        <p>
+            {% for defn in synset.definitions %}
+                {{defn}}
+            {% endfor %}
+        </p>
+        <p>
+            {% for sentence in synset.sentences %}
+                {{sentence}}
+            {% endfor %}
+        </p>
+    {% endfor %}
+</body>
+</html>

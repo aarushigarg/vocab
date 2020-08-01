@@ -2,16 +2,17 @@
 A dictionary is created. Each key is a word and the corresponding value is a list of synsets that has the word. When the code is run, a 
 random word and its information will be printed
 """
-from flask import Flask, make_response
+from flask import Flask, make_response, render_template
 app = Flask(__name__)
 
 import random
 syn_dict = {}
 
 class Synset():
-    def __init__(self, lex_id = 00, syn_id = "",  words = None, occurrences = None, definitions = None, sentences = None):
+    def __init__(self, lex_id=00, syn_id="",  part_of_speech="", words=None, occurrences=None, definitions=None, sentences=None):
         self.lex_id = lex_id
         self.syn_id = syn_id
+        self.part_of_speech = part_of_speech
         self.words = words or list()
         self.occurrences = occurrences or list()
         self.definitions = definitions or list()
@@ -31,6 +32,9 @@ def dictionary_creater():
 
                 #syn_id
                 syn.syn_id = line[0:8] + " " + part_of_speech
+
+                #part_of_speech
+                syn.part_of_speech = part_of_speech
 
                 #words
                 num_of_words = line[14:16]
@@ -89,60 +93,10 @@ def synset_sorter(word):
     return synsets
 
 
-#printing the information about the word
-def word_info_finder(rand_word, synsets):
-    all_information = []
-    word = ""
-    for letter in rand_word:
-        if letter == "_":
-            word += (" ")
-        else:
-            word += letter
-    
-    all_information.append(f"Word: {word}")
-
-
-    for synset in synsets:
-        all_information.append(f"Type: {synset.syn_id[9:]}")
-
-        defs = ""
-        for i in range(len(synset.definitions)):
-            if i == len(synset.definitions) - 1:
-                defs += synset.definitions[i]
-            else:
-                defs += synset.definitions[i]
-                defs += ", "
-
-        all_information.append("Definitions: " + defs)
-
-
-        sentences = []
-        print("Sentences:", end = " ")
-        if len(synset.sentences) == 0:
-            all_information.append("Sentences: None")
-        for i in range(len(synset.sentences)):
-            if word in synset.sentences[i]:
-                sentences.append(synset.sentences[i])
-
-        sents = ""
-        for i in range(len(sentences)):
-            if i == len(sentences) - 1:
-                sents += synset.sentences[i]
-            else:
-                sents += sentences[i]
-                sents += ", "
-
-        all_information.append(sents)
-
-    return '\n'.join(all_information)
-
-
 dictionary_creater()
 @app.route("/")
 def home():
     rand_word = random.choice(list(syn_dict))
+    display_word = rand_word.replace("_", " ")
     synsets = synset_sorter(rand_word)
-    s = word_info_finder(rand_word, synsets)
-    response = make_response(s, 200)
-    response.mimetype = "text/plain"
-    return response
+    return render_template("word.html", word=display_word, synsets=synsets)
