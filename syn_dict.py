@@ -20,7 +20,7 @@ class Synset():
 
 def dictionary_creater():
     for part_of_speech in ["noun", "verb", "adj", "adv"]:
-        f = open("/Users/aarushi/Documents/Vocab website/WordNet-3.0/dict/data." + part_of_speech)
+        f = open("./WordNet-3.0/dict/data." + part_of_speech)
         for line in f:
             if line[0] != " ":
                 syn = Synset()
