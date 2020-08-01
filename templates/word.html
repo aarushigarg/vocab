@@ -4,9 +4,9 @@
     <title>{{word}}</title>
 </head>
 <body>
-    <form>
+    <form action="/search">
         Word: <input type="text" name="word"/>
-        <input type="submit" name="search" value="Search"
+        <input type="submit" name="search" value="Search"/>
     </form>
     <h1>Word: {{word}}</h1>
     {% for synset in synsets %}

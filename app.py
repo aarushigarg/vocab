@@ -2,7 +2,7 @@
 A dictionary is created. Each key is a word and the corresponding value is a list of synsets that has the word. When the code is run, a 
 random word and its information will be printed
 """
-from flask import Flask, make_response, render_template
+from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
 
 import random
@@ -99,4 +99,15 @@ def home():
     rand_word = random.choice(list(syn_dict))
     display_word = rand_word.replace("_", " ")
     synsets = synset_sorter(rand_word)
+    return render_template("word.html", word=display_word, synsets=synsets)
+
+@app.route("/search")
+def search():
+    word = request.args.get("word", "")
+    word = word.lower()
+    if word == "":
+        return redirect("/")
+
+    synsets = synset_sorter(word)
+    display_word = word.replace("_", " ")
     return render_template("word.html", word=display_word, synsets=synsets)
