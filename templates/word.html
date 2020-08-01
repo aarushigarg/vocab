@@ -8,6 +8,7 @@
         Word: <input type="text" name="word"/>
         <input type="submit" name="search" value="Search"/>
     </form>
+    <br>
     <h1>Word: {{word}}</h1>
     {% for synset in synsets %}
         <h3>Type: {{synset.part_of_speech}}</h3>
@@ -18,9 +19,14 @@
         </p>
         <p>
             {% for sentence in synset.sentences %}
-                {{sentence}}
+                {% if word in sentence %}
+                    {{sentence}}
+                {% endif %}
             {% endfor %}
         </p>
     {% endfor %}
+    <form action="/">
+        <input type="submit" name="" value="New word"/>
+    </form>
 </body>
 </html>
