@@ -1,7 +1,3 @@
-"""
-A dictionary is created. Each key is a word and the corresponding value is a list of synsets that has the word. When the code is run, a 
-random word and its information will be printed
-"""
 from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
 
