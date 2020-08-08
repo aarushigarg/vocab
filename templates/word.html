@@ -17,7 +17,7 @@
                         <input class="input" placeholder="Word" type="text" name="word"/>
                     </div>
                     <div class="control">
-                        <input class="button is-light" type="submit" name="search" value="Search"/>
+                        <input class="button is-outlined" type="submit" name="search" value="Search"/>
                     </div>
                 </div>  
             </form>
@@ -27,8 +27,8 @@
             </h1>
             {% for synset in synsets %}
                 <div class="container my-4">
-                    <p class="has-text-weight-bold">
-                        Type: {{synset.part_of_speech}}
+                    <p class="has-text-weight-semibold is-size-5">
+                        {{synset.part_of_speech}}
                     </p>
                     <p>
                         {% for defn in synset.definitions %}
@@ -46,7 +46,7 @@
             {% endfor %}
             <br>
             <form action="/">
-                <input class="button is-dark" type="submit" name="" value="New word"/>
+                <input class="button is-dark" type="submit" name="" value="Another word"/>
             </form>
         </div>
     </section>
