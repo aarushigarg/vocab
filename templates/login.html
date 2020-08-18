@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}login{% endblock %}
+
+{% block content %}
+<form action="/login" method="POST">
+    <div class="field has-addons">
+        <div class="control">
+            <input class="input" placeholder="Email" type="text" name="email"/>
+        </div>
+        <div class="control">
+            <input class="button is-outlined" type="submit" name="login" value="Login"/>
+        </div>
+    </div>  
+</form>
+{% endblock %}

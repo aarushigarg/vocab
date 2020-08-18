@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{word}}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <form action="/search">
+            <div class="field has-addons">
+                <div class="control">
+                    <input class="input" placeholder="Word" type="text" name="word"/>
+                </div>
+                <div class="control">
+                    <input class="button is-outlined" type="submit" name="search" value="Search"/>
+                </div>
+            </div>  
+        </form>
+        <br>
+        <h1 class="title is-2">
+            {{word}}
+        </h1>
+        {% for synset in synsets %}
+            <div class="container my-4">
+                <p class="has-text-weight-semibold is-size-5">
+                    {{synset.part_of_speech}}
+                </p>
+                <p>
+                    {% for defn in synset.definitions %}
+                        {{defn}}
+                    {% endfor %}
+                </p>
+                <p>
+                    {% for sentence in synset.sentences %}
+                        {% if word in sentence %}
+                            {{sentence}}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+        {% endfor %}
+        <br>
+        <form action="/">
+            <input class="button is-dark" type="submit" name="" value="Another word"/>
+        </form>
+    </div>
+</section>
+{% endblock %}
