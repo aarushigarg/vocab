@@ -1,7 +1,8 @@
 import psycopg2
 import psycopg2.extras
+import os
 
-conn = psycopg2.connect(database="vocabdb", user="vocabuser", password="vocabpass")
+conn = psycopg2.connect(os.getenv("DATABASE_URL"))
 conn.set_session(autocommit=True)
 
 def account_finder_or_creater(email):
