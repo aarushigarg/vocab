@@ -8,6 +8,8 @@
     <title>{% block title %} {% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <meta name="google-site-verification" content="CVlvaKzDyhEhGVKXhrwBcxNJP9-tH5r29_pD0x3xZpc" />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="423115749281-9plvnrn0l6mju91jmqh63sopjm6ivadi.apps.googleusercontent.com">
     {% endblock %}
 </head>
 
@@ -30,7 +32,7 @@
                 {{ user.username }}
             </div>
             <div class="navbar-item">
-                <a class="button is-dark" href="/logout">
+                <a id="logout" class="button is-dark" href="/logout">
                     Log out
                 </a>
             </div>
@@ -40,7 +42,19 @@
 
     {% block content %}
     {% endblock %}
-    
+    <script type="text/javascript">
+      function signOut(e) {
+        e.preventDefault();
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            location.href="/logout";
+        });
+      }
+      document.getElementById("logout").addEventListener("click", signOut);
+    </script>
+    <div style="display: none;">
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    </div>
 </body>
 
 </html>

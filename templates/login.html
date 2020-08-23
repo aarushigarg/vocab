@@ -4,19 +4,29 @@
 
 {% block headcontent %}
 {{ super() }}
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<meta name="google-signin-client_id" content="423115749281-9plvnrn0l6mju91jmqh63sopjm6ivadi.apps.googleusercontent.com">
+<script type="text/javascript">
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  document.getElementById("email").value = profile.getEmail();
+  document.getElementById("avatar").value = profile.getImageUrl();
+  document.getElementById("loginform").submit();
+}
+</script>
 {% endblock %}
 
 {% block content %}
-<form action="/login" method="POST">
+<form id="loginform" action="/login" method="POST" style="display: none;">
     <div class="field has-addons">
         <div class="control">
-            <input class="input" placeholder="Email" type="text" name="email"/>
+            <input id="email" class="input" type="text" name="email"/>
+            <input id="avatar" class="input" type="text" name="avatar"/>
         </div>
         <div class="control">
             <input class="button is-outlined" type="submit" name="login" value="Login"/>
         </div>
     </div>  
 </form>
+
+
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
 {% endblock %}

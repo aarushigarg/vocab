@@ -32,7 +32,7 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
-        user = account_finder_or_creater(request.form.get("email", ""))
+        user = account_finder_or_creater(request.form.get("email", ""), request.form.get("avatar", ""))
         resp = make_response(redirect("/"))
         resp.set_cookie("user_id", str(user["id"]))
         return resp
