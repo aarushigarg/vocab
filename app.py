@@ -5,6 +5,7 @@ from wordnet import get_rand_word, synset_sorter
 
 from db import account_finder_or_creater, get_user_by_id
 
+
 @app.route("/")
 def home():
     rand_word = get_rand_word()
@@ -22,14 +23,12 @@ def search():
     word = word.lower()
     if word == "":
         return redirect("/")
-
     synsets = synset_sorter(word)
     display_word = word.replace("_", " ")
     return render_template("home.html", word=display_word, synsets=synsets)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    print(request.method)
     if request.method == "GET":
         return render_template("login.html")
     else:

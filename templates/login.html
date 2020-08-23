@@ -2,6 +2,12 @@
 
 {% block title %}login{% endblock %}
 
+{% block headcontent %}
+{{ super() }}
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="423115749281-9plvnrn0l6mju91jmqh63sopjm6ivadi.apps.googleusercontent.com">
+{% endblock %}
+
 {% block content %}
 <form action="/login" method="POST">
     <div class="field has-addons">
