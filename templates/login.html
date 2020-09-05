@@ -6,9 +6,8 @@
 {{ super() }}
 <script type="text/javascript">
 function onSignIn(googleUser) {
-  var profile = googleUser.getBasicProfile();
-  document.getElementById("email").value = profile.getEmail();
-  document.getElementById("avatar").value = profile.getImageUrl();
+  var id_token = googleUser.getAuthResponse().id_token;
+  document.getElementById("token").value = id_token;
   document.getElementById("loginform").submit();
 }
 </script>
@@ -18,8 +17,7 @@ function onSignIn(googleUser) {
 <form id="loginform" action="/login" method="POST" style="display: none;">
     <div class="field has-addons">
         <div class="control">
-            <input id="email" class="input" type="text" name="email"/>
-            <input id="avatar" class="input" type="text" name="avatar"/>
+            <input id="token" class="input" type="text" name="token"/>
         </div>
         <div class="control">
             <input class="button is-outlined" type="submit" name="login" value="Login"/>

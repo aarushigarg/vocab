@@ -5,6 +5,11 @@ from wordnet import get_rand_word, synset_sorter
 
 from db import account_finder_or_creater, get_user_by_id
 
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+import os
+
 
 @app.route("/")
 def home():
@@ -32,7 +37,9 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
-        user = account_finder_or_creater(request.form.get("email", ""), request.form.get("avatar", ""))
+        token = request.form.get("token", "")
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), os.getenv("GOOGLE_CLIENT_ID"))
+        user = account_finder_or_creater(idinfo["email"], idinfo["picture"])
         resp = make_response(redirect("/"))
         resp.set_cookie("user_id", str(user["id"]))
         return resp
