@@ -1,5 +1,6 @@
 from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
+app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
 
 from wordnet import get_rand_word, synset_sorter
 
@@ -10,17 +11,24 @@ from google.auth.transport import requests
 
 import os
 
+from flask_login import LoginManager, current_user, login_user, logout_user
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return get_user_by_id(user_id)
+
+@app.context_processor
+def inject_user():
+    return dict(user=current_user)
 
 @app.route("/")
 def home():
     rand_word = get_rand_word()
     display_word = rand_word.replace("_", " ")
     synsets = synset_sorter(rand_word)
-    if "user_id" in request.cookies:
-        user = get_user_by_id(request.cookies.get("user_id"))
-    else:
-        user = None
-    return render_template("home.html", word=display_word, synsets=synsets, user=user)
+    return render_template("home.html", word=display_word, synsets=synsets)
 
 @app.route("/search")
 def search():
@@ -41,11 +49,11 @@ def login():
         idinfo = id_token.verify_oauth2_token(token, requests.Request(), os.getenv("GOOGLE_CLIENT_ID"))
         user = account_finder_or_creater(idinfo["email"], idinfo["picture"])
         resp = make_response(redirect("/"))
-        resp.set_cookie("user_id", str(user["id"]))
+        login_user(user, remember=True)
         return resp
 
 @app.route("/logout")
 def logout():
     resp = make_response(redirect("/"))
-    resp.delete_cookie("user_id")
+    logout_user()
     return resp

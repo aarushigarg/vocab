@@ -1,7 +1,7 @@
 import random
 syn_dict = {}
 
-class Synset():
+class Synset:
     def __init__(self, lex_id=00, syn_id="",  part_of_speech="", words=None, occurrences=None, definitions=None, sentences=None):
         self.lex_id = lex_id
         self.syn_id = syn_id
