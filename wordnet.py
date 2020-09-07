@@ -87,5 +87,9 @@ def get_rand_word():
     rand_word = random.choice(list(syn_dict))
     return rand_word
 
+#checks if a word is in the dictionary
+def word_exists(word):
+    return word in syn_dict
+
 
 dictionary_creater()

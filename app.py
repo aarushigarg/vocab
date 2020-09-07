@@ -2,7 +2,7 @@ from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
 app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
 
-from wordnet import get_rand_word, synset_sorter
+from wordnet import get_rand_word, synset_sorter, word_exists
 
 from db import account_finder_or_creater, get_user_by_id
 
@@ -26,19 +26,22 @@ def inject_user():
 @app.route("/")
 def home():
     rand_word = get_rand_word()
-    display_word = rand_word.replace("_", " ")
-    synsets = synset_sorter(rand_word)
-    return render_template("home.html", word=display_word, synsets=synsets)
+    return redirect(f"/word/{rand_word}")
+
+@app.route("/word/<the_word>")
+def word(the_word):
+    synsets = synset_sorter(the_word)
+    display_word = the_word.replace("_", " ")
+    synsets = synset_sorter(the_word)
+    return render_template("word_display.html", word=display_word, synsets=synsets)
 
 @app.route("/search")
 def search():
     word = request.args.get("word", "")
     word = word.lower()
-    if word == "":
+    if word == "" or not word_exists(word) :
         return redirect("/")
-    synsets = synset_sorter(word)
-    display_word = word.replace("_", " ")
-    return render_template("home.html", word=display_word, synsets=synsets)
+    return redirect(f"/word/{word}")
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
