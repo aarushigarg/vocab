@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
 import os
+import json
 
 conn = psycopg2.connect(os.getenv("DATABASE_URL"))
 conn.set_session(autocommit=True)
@@ -35,3 +36,17 @@ def get_user_by_id(id):
     user = cur.fetchone()
     user_object = User(user["is_active"], user["id"], user["username"], user["email"], user["avatar"])
     return user_object
+
+def get_word(word):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("select * from cached_words where word = %s", [word])
+    record = cur.fetchone()
+    if not record:
+        return None
+    word_data = record["data"]
+    return word_data
+
+def save_word(word, word_data):
+    word_data = json.dumps(word_data) #convert from dict to str for saving
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("insert into cached_words (word, data) values (%s, %s)", [word, word_data])

@@ -19,6 +19,7 @@
         <h1 class="title is-2">
             {{word}}
         </h1>
+        <!--
         {% for synset in synsets %}
             <div class="container my-4">
                 <p class="has-text-weight-semibold is-size-5">
@@ -35,6 +36,61 @@
                             {{sentence}}
                         {% endif %}
                     {% endfor %}
+                </p>
+                <div class="tags has-addons">
+                    <span class="tag is-light">Saved?</span>
+                    <a href="#" class="saved-status tag is-dark is-small">No</a>
+                </div>
+            </div>
+        {% endfor %}
+        -->
+        {% for word_lexical_category in word_meaning.word_lexical_categories %}
+            <p>
+                {% for etymology in word_lexical_category.etymologies %}
+                    {{etymology}}
+                {% endfor %}
+                <br>
+            </p>
+            <div class="container my-4">
+                <p class="has-text-weight-semibold is-size-5">
+                    {{word_lexical_category.lexical_category}}
+                </p>
+                <p>
+                    {% if word_lexical_category.phonetic_spelling %}
+                        <a href="{{word_lexical_category.pronunciation_audio}}" target=_blank>
+                            {{word_lexical_category.phonetic_spelling}}
+                        </a>
+                    {% endif %}
+                </p>
+                <p>
+                    {% for word_definition in word_lexical_category.word_definitions %}
+                        Definition:
+                        <br>
+                        {% for definition in word_definition.definitions %}
+                            {{definition}}
+                            <br>
+                        {% endfor %}
+                        <br>
+                        {% if word_definition.examples %}
+                            Examples:
+                            <br>
+                        {% endif %}
+                        {% for example in word_definition.examples %}
+                            {{example}}
+                            <br>
+                        {% endfor %}
+                        <br>
+                        {% if word_definition.synonyms %}
+                            Synonyms:
+                            <br>
+                        {% endif %}
+                        {% for synonym in word_definition.synonyms %}
+                            {{synonym}}
+                            <br>
+                        {% endfor %}
+                        <br>
+                    {% endfor %}
+                    <br>
                 </p>
             </div>
         {% endfor %}
