@@ -16,6 +16,10 @@ def get_word_from_oxford(word):
     word_id = word
     url =  "https://od-api.oxforddictionaries.com:443/api/v2/entries/" + language + "/" + word_id.lower()
     r = requests.get(url, headers={"app_id": os.getenv("OXFORD_APP_ID"), "app_key": os.getenv("OXFORD_APP_KEY")})
+    if r.status_code != 200:
+        print("Oxfrod API call failed")
+        print(r.status_code)
+        print(r.text)
     data = r.json()
     return data
 
