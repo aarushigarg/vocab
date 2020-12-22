@@ -19,31 +19,14 @@
         <h1 class="title is-2">
             {{word}}
         </h1>
-        <!--
-        {% for synset in synsets %}
-            <div class="container my-4">
-                <p class="has-text-weight-semibold is-size-5">
-                    {{synset.part_of_speech}}
-                </p>
-                <p>
-                    {% for defn in synset.definitions %}
-                        {{defn}}
-                    {% endfor %}
-                </p>
-                <p>
-                    {% for sentence in synset.sentences %}
-                        {% if word in sentence %}
-                            {{sentence}}
-                        {% endif %}
-                    {% endfor %}
-                </p>
-                <div class="tags has-addons">
-                    <span class="tag is-light">Saved?</span>
-                    <a href="#" class="saved-status tag is-dark is-small">No</a>
-                </div>
-            </div>
-        {% endfor %}
-        -->
+        <div class="tags has-addons">
+            {% if word_save_status %}
+                <a href="/save-word" class="saved-status tag is-dark" id="save-unsave-word" saved="true" word="{{word}}">Unsave</a>
+            {% else %}
+                <a href="/save-word" class="saved-status tag is-dark" id="save-unsave-word" saved="false" word="{{word}}">Save</a>
+            {% endif %}
+            
+        </div>
         {% for word_lexical_category in word_meaning.word_lexical_categories %}
             <p>
                 {% for etymology in word_lexical_category.etymologies %}
@@ -100,4 +83,37 @@
         </form>
     </div>
 </section>
+
+<script type="text/javascript">
+    function saveOrUnsave(e) {
+        e.preventDefault();
+        var source = e.target || e.srcElement;
+        var saved = source.getAttribute("saved");
+
+        var http = new XMLHttpRequest();
+        var url = "/save-word";
+        var word = source.getAttribute("word");
+        var command = saved == "false" ? "save" : "unsave";
+        var params = "word=" + word + "&command=" + command;
+
+        http.open('POST', url, true);
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+
+        http.onreadystatechange = function() {
+            console.log(http.readyState, http.status)
+            if (http.readyState == 4 && http.status == 200) {
+                if (command == "save") {
+                    source.setAttribute("saved", "true");
+                    source.text = "Unsave"
+                } else {
+                    source.setAttribute("saved", "false");
+                    source.text = "Save"
+                }
+                
+            }
+        }
+        http.send(params);
+    }
+    document.getElementById("save-unsave-word").addEventListener("click", saveOrUnsave);
+</script>
 {% endblock %}

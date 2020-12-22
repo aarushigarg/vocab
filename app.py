@@ -6,7 +6,7 @@ app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
 
 from oxford import get_rand_word, look_up_word
 
-from db import account_finder_or_creater, get_user_by_id
+from db import account_finder_or_creater, get_user_by_id, save_word_for_user, unsave_word_for_user, get_saved_words, word_saved_by_user_or_not
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -38,7 +38,8 @@ def home():
 def word(the_word):
     word_meaning = look_up_word(the_word)
     display_word = the_word.replace("_", " ")
-    return render_template("word_display.html", word=display_word, word_meaning=word_meaning)
+    word_save_status = word_saved_by_user_or_not(current_user.id, display_word)
+    return render_template("word_display.html", word=display_word, word_meaning=word_meaning, word_save_status=word_save_status)
 
 #routes to a word that is searched
 @app.route("/search")
@@ -69,3 +70,24 @@ def logout():
     resp = make_response(redirect("/"))
     logout_user()
     return resp
+
+#saves the word
+@app.route("/save-word", methods=['POST'])
+def save_word():
+    word = request.form.get("word", "")
+    command = request.form.get("command", "")
+    user_id = current_user.id
+    if command == "save":
+        save_word_for_user(user_id, word)
+    else:
+        unsave_word_for_user(user_id, word)
+    return ""
+
+@app.route("/saved")
+def saved():
+    user_id = current_user.id
+    saved_words = get_saved_words(user_id)
+    users_saved_words = []
+    for l in saved_words:
+        users_saved_words.append(l[0])
+    return render_template("saved.html", users_saved_words=users_saved_words)

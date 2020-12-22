@@ -17,10 +17,13 @@
     <nav class="navbar is-light" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="/">
-                Vocabulary
+                Lexicon
             </a>
         </div>
         <div class="navbar-end">
+            <a class="navbar-item" href="/saved">
+                Saved words
+            </a>
             {% if user.is_anonymous %}
             <div class="navbar-item">
                 <a class="button is-dark" href="/login">
