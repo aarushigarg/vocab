@@ -33,3 +33,30 @@ create table if not exists cached_words (
     create_time timestamp default now(),
     update_time timestamp default now()
 );
+
+create type pos as enum ('noun', 'pronoun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection');
+create table if not exists word_defns (
+    id serial primary key,
+    word varchar(512) not null,
+    part_of_speech pos,
+    defn varchar(8192) not null,
+    examples varchar(8192)[],
+    user_id int,
+    create_time timestamp default now(),
+    update_time timestamp default now()
+);
+
+create table if not exists word_defn_lists (
+    id serial primary key,
+    user_id int not null,
+    name varchar(512) not null,
+    create_time timestamp default now(),
+    update_time timestamp default now()
+);
+
+create table if not exists word_defn_list_map (
+    word_defn_list_id int not null,
+    word_defn_id int not null,
+    create_time timestamp default now(),
+    primary key(word_defn_list_id, word_defn_id)
+);

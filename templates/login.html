@@ -4,6 +4,7 @@
 
 {% block headcontent %}
 {{ super() }}
+
 <script type="text/javascript">
 function onSignIn(googleUser) {
   var id_token = googleUser.getAuthResponse().id_token;
@@ -11,9 +12,11 @@ function onSignIn(googleUser) {
   document.getElementById("loginform").submit();
 }
 </script>
+
 {% endblock %}
 
 {% block content %}
+
 <form id="loginform" action="/login" method="POST" style="display: none;">
     <div class="field has-addons">
         <div class="control">
@@ -25,6 +28,6 @@ function onSignIn(googleUser) {
     </div>  
 </form>
 
-
 <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
 {% endblock %}

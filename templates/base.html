@@ -14,49 +14,46 @@
 </head>
 
 <body>
-    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                Lexicon
-            </a>
-        </div>
-        <div class="navbar-end">
-            <a class="navbar-item" href="/saved">
-                Saved words
-            </a>
-            {% if user.is_anonymous %}
-            <div class="navbar-item">
-                <a class="button is-dark" href="/login">
-                    Log in
+    <div class="container">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">
+                    Lexicon
                 </a>
             </div>
-            {% else %}
-            <div class="navbar-item">
-                {{ user.username }}
+            <div class="navbar-end">
+                {% if user.is_anonymous %}
+                <div class="navbar-item">
+                    <a class="button is-dark" href="/login">
+                        Log in
+                    </a>
+                </div>
+                {% else %}
+                <div class="navbar-item">
+                    <a id="logout" class="button is-dark" href="/logout">
+                        Log out
+                    </a>
+                </div>
+                {% endif %}
             </div>
-            <div class="navbar-item">
-                <a id="logout" class="button is-dark" href="/logout">
-                    Log out
-                </a>
-            </div>
-            {% endif %}
-          </div>
-    </nav>
+        </nav>
 
-    {% block content %}
-    {% endblock %}
-    <script type="text/javascript">
-      function signOut(e) {
-        e.preventDefault();
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-            location.href="/logout";
-        });
-      }
-      document.getElementById("logout").addEventListener("click", signOut);
-    </script>
-    <div style="display: none;">
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        {% block content %}
+        {% endblock %}
+        
+        <script type="text/javascript">
+        function signOut(e) {
+            e.preventDefault();
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                location.href="/logout";
+            });
+        }
+        document.getElementById("logout").addEventListener("click", signOut);
+        </script>
+        <div style="display: none;">
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        </div>
     </div>
 </body>
 

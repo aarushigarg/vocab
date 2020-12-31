@@ -3,6 +3,7 @@
 {% block title %}{{word}}{% endblock %}
 
 {% block content %}
+
 <section class="section">
     <div class="container">
         <form action="/search">
@@ -16,6 +17,7 @@
             </div>  
         </form>
         <br>
+
         <h1 class="title is-2">
             {{word}}
         </h1>
@@ -25,15 +27,9 @@
             {% else %}
                 <a href="/save-word" class="saved-status tag is-dark" id="save-unsave-word" saved="false" word="{{word}}">Save</a>
             {% endif %}
-            
         </div>
+
         {% for word_lexical_category in word_meaning.word_lexical_categories %}
-            <p>
-                {% for etymology in word_lexical_category.etymologies %}
-                    {{etymology}}
-                {% endfor %}
-                <br>
-            </p>
             <div class="container my-4">
                 <p class="has-text-weight-semibold is-size-5">
                     {{word_lexical_category.lexical_category}}
@@ -78,6 +74,7 @@
             </div>
         {% endfor %}
         <br>
+        
         <form action="/">
             <input class="button is-dark" type="submit" name="" value="Another word"/>
         </form>
@@ -116,4 +113,5 @@
     }
     document.getElementById("save-unsave-word").addEventListener("click", saveOrUnsave);
 </script>
+
 {% endblock %}

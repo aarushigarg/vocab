@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{wdl.name}}{% endblock %}
+
+{% block content %}
+
+<h1 class="title">{{wdl.name}}</h1>
+<a class="button" href="/word-definition-list/{{wdl.id}}/rename">Rename</a>
+<a class="button" href="/word-definition-list/{{wdl.id}}/delete">Delete</a>
+<br><br>
+
+<a class="button" href="/word-definition-list/{{wdl.id}}/add">Add a new definition</a>
+<br><br>
+
+<div>
+    {% for word_defn in word_defns %}
+        {{word_defn.word}}
+        <br>
+        {{word_defn.defn}}
+        <br>
+
+        {% for example in word_defn.examples %}
+            {% if example|length %}
+                {{example}}
+                <br>
+            {% endif %}
+        {% endfor %}
+
+        <a>Edit</a>
+        <br>
+        <a>Delete</a>
+        <br>
+        <br>
+
+    {% endfor %}
+</div>
+
+{% endblock %}

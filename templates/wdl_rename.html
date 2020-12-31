@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{wdl.name}}{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+            <input class="input" type="text" placeholder="List name" value="{{wdl.name}}" name="name">
+        </div>
+    </div>
+    
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-link">Save</button>
+        </div>
+        <div class="control">
+            <a class="button is-link is-light" href="/word-definition-list/{{wdl.id}}">Cancel</a>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

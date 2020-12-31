@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="tile is-ancestor">
+    <div class="tile is-child box is-4">
+        <a class="title" href="/word-definition-list/create">Add a new list</a>
+    </div>
+</div>
+
+{% for wdl in wdls %}
+    <br>
+    <div class="tile is-ancestor">  
+        <div class="tile is-child box is-4">
+            <a class="title" href="/word-definition-list/{{wdl.id}}">{{wdl.name}}</a>
+        </div>
+    </div>
+{% endfor %}
+
+{% endblock %}
