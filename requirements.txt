@@ -1,6 +1,6 @@
 flask
 gunicorn
-psycopg2
+psycopg2-binary
 google-auth
 requests
 flask-login

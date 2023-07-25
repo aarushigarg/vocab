@@ -1,37 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Create list{% endblock %}
+{% block title %}{{wdl.name}}{% endblock %}
 
 {% block content %}
-
-<h1 class="title">Add to {{wdl.name}}</h1>
+<h1 class="title">{{wdl.name}}: {{word_defn.word}}</h1>
 
 <form method="POST">
     <div class="field">
         <label class="label">Word *</label>
         <div class="control">
-            <input class="input" type="text" placeholder="Enter the word" name="word">
+            <input class="input" type="text" placeholder="Enter the word" value="{{word_defn.word}}" name="word">
         </div>
 
         <label class="label">Part of speech *</label>
         <div class="control">
             <div class="select">
                 <select name="pos">
-                    <option>noun</option>
-                    <option>pronoun</option>
-                    <option>verb</option>
-                    <option>adjective</option>
-                    <option>adverb</option>
-                    <option>preposition</option>
-                    <option>conjunction</option>
-                    <option>interjection</option>
+                    {% for pos in pos_list %}
+                        <option {% if pos == word_defn.pos %}selected{% endif %}>{{pos}}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>
 
         <label class="label">Definition *</label>
         <div class="control">
-            <input class="input" type="text" placeholder="Enter the definition" name="defn">
+            <input class="input" type="text" placeholder="Enter the definition" value="{{word_defn.defn}}"" name="defn">
         </div>
 
         <label class="label">Examples</label>
@@ -41,7 +35,7 @@
             <input class="input" type="text" placeholder="Example 3" name="example3">
         </div>
     </div>
-    
+
     <div class="field is-grouped">
         <div class="control">
             <button class="button is-link">Save</button>
@@ -51,5 +45,4 @@
         </div>
     </div>
 </form>
-
 {% endblock %}

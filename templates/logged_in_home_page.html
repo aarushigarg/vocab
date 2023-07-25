@@ -3,6 +3,17 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+<form action="/search">
+    <div class="field has-addons">
+        <div class="control">
+            <input class="input" placeholder="Word" type="text" name="word"/>
+        </div>
+        <div class="control">
+            <input class="button is-outlined" type="submit" name="search" value="Search"/>
+        </div>
+    </div>  
+</form>
+<br><br>
 
 <div class="tile is-ancestor">
     <div class="tile is-child box is-4">

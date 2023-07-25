@@ -5,6 +5,7 @@
 {% block content %}
 
 <h1 class="title">{{wdl.name}}</h1>
+
 <a class="button" href="/word-definition-list/{{wdl.id}}/rename">Rename</a>
 <a class="button" href="/word-definition-list/{{wdl.id}}/delete">Delete</a>
 <br><br>
@@ -12,9 +13,14 @@
 <a class="button" href="/word-definition-list/{{wdl.id}}/add">Add a new definition</a>
 <br><br>
 
+<a class="button" href="/word-definition-list/{{wdl.id}}/launch-practice">Practice</a>
+<br><br>
+
 <div>
     {% for word_defn in word_defns %}
         {{word_defn.word}}
+        <br>
+        {{word_defn.part_of_speech}}
         <br>
         {{word_defn.defn}}
         <br>
@@ -26,9 +32,9 @@
             {% endif %}
         {% endfor %}
 
-        <a>Edit</a>
+        <a href="/word-definition/{{wdl.id}}/{{word_defn.id}}/edit">Edit</a>
         <br>
-        <a>Delete</a>
+        <a href="/word-definition/{{wdl.id}}/{{word_defn.id}}/delete">Delete</a>
         <br>
         <br>
 

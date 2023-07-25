@@ -38,7 +38,7 @@ create type pos as enum ('noun', 'pronoun', 'verb', 'adjective', 'adverb', 'prep
 create table if not exists word_defns (
     id serial primary key,
     word varchar(512) not null,
-    part_of_speech pos,
+    part_of_speech pos not null,
     defn varchar(8192) not null,
     examples varchar(8192)[],
     user_id int,
@@ -60,3 +60,23 @@ create table if not exists word_defn_list_map (
     create_time timestamp default now(),
     primary key(word_defn_list_id, word_defn_id)
 );
+
+create table if not exists practice_sessions (
+    id serial primary key,
+    user_id int not null,
+    wdl_id int not null,
+    word_defn_ids int [] not null,
+    current_index int default 0,
+    create_time timestamp default now(),
+    update_time timestamp default now()
+);
+
+create type recall_difficulty_level as enum ("easy", "difficult", "couldnt_recall")
+create table if not exists feedback (
+    id serial primary key,
+    user_id int not null,
+    word_defn_id int not null,
+    difficulty_level recall_difficulty_level not null,
+    create_time timestamp default now(),
+    update_time timestamp default now()
+)

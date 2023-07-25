@@ -1,14 +1,14 @@
 from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
 app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
-
-#from wordnet import get_rand_word, synset_sorter, word_exists
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)
 
 from oxford import get_rand_word, look_up_word
 
 from db import save_word_for_user, unsave_word_for_user, get_saved_words, word_saved_by_user_or_not
 
-from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list
+from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list, delete_map_of_word_defn_to_list, delete_word_defn, PracticeSession, Feedback
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -129,11 +129,10 @@ def word_defn_list_rename(wdl_id):
 @app.route("/word-definition-list/<wdl_id>/delete", methods=['GET', 'POST'])
 def word_defn_list_delete(wdl_id):
     wdls = WordDefnList.get_by_user_id(current_user.id)
-
     if len(wdls) < 2:
         return redirect(f"/word-definition-list/{wdl_id}")
+    
     wdl = WordDefnList.get_by_id(wdl_id)
-
     if request.method == "GET":
         return render_template("wdl_delete.html", wdl=wdl)
     else:
@@ -160,6 +159,7 @@ def word_defn_list_add(wdl_id):
         return render_template("wdl_add.html", wdl=wdl)
     else:
         word = request.form.get("word", "")
+        pos = request.form.get("pos", "")
         defn = request.form.get("defn", "")
         example1 = request.form.get("example1", "")
         example2 = request.form.get("example2", "")
@@ -173,6 +173,64 @@ def word_defn_list_add(wdl_id):
         if example3 != None:
             examples.append(example3)
 
-        word_defn = WordDefn.create(word, defn, examples, current_user.id)
+        word_defn = WordDefn.create(word, pos, defn, examples, current_user.id)
         map_word_defn_to_list(word_defn.id, wdl_id)
         return render_template("wdl_add.html", wdl=wdl)
+
+
+@app.route("/word-definition/<wdl_id>/<word_defn_id>/edit", methods=['GET', 'POST'])
+def word_defn_edit(wdl_id, word_defn_id):
+    wdl = WordDefnList.get_by_id(wdl_id)
+    word_defn = WordDefn.get_by_id(word_defn_id)
+    
+    pos_list = 'noun', 'pronoun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection'
+    if request.method == "GET":
+        print(word_defn.defn)
+        return render_template("word_defn_edit.html", word_defn=word_defn, pos_list=pos_list, wdl=wdl)
+
+    else:
+        word = request.form.get("word", "")
+        pos = request.form.get("pos", "")
+        defn = request.form.get("defn", "")
+        example1 = request.form.get("example1", "")
+        example2 = request.form.get("example2", "")
+        example3 = request.form.get("example3", "")
+        examples = []
+
+        if example1 != None:
+            examples.append(example1)
+        if example2 != None:
+            examples.append(example2)
+        if example3 != None:
+            examples.append(example3)
+
+        word_defn = WordDefn.update(word, pos, defn, examples, word_defn.id)
+        return redirect(f"/word-definition-list/{wdl.id}")
+
+
+@app.route("/word-definition/<wdl_id>/<word_defn_id>/delete", methods=['GET', 'POST'])
+def word_defn_delete(wdl_id, word_defn_id):
+    wdl = WordDefnList.get_by_id(wdl_id)
+    word_defn = WordDefn.get_by_id(word_defn_id)
+
+    if request.method == "GET":
+        return render_template("word_defn_delete.html", wdl=wdl, word_defn=word_defn)
+    else:
+        delete_map_of_word_defn_to_list(word_defn_id, wdl_id)
+        delete_word_defn(word_defn_id)
+        return redirect(f"/word-definition-list/{wdl.id}")
+
+
+@app.route("/word-definition-list/<wdl_id>/launch-practice")
+def word_defn_list_launch_practice(wdl_id):
+    word_defn_ids = get_word_defns_from_list(wdl_id)
+    user_id = WordDefnList.get_user_by_wdl_id(wdl_id)
+    session = PracticeSession.create(user_id, wdl_id, word_defn_ids)
+    return redirect(f"/word-definition-list/{wdl_id}/practice/{session.id}")
+
+
+@app.route("/word-definition-list/<wdl_id>/practice/<session_id>")
+def word_defn_list_practice(wdl_id, session_id):
+    wdl = WordDefnList.get_by_id(wdl_id)
+    session = PracticeSession.get_by_id(session_id)
+    return render_template("wdl_practice.html", wdl=wdl, session=session)

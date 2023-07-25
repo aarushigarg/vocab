@@ -1,3 +1,5 @@
+import random
+
 import psycopg2
 import psycopg2.extras
 import os
@@ -68,6 +70,13 @@ class WordDefnList():
         return word_defn_lists
 
     @staticmethod
+    def get_user_by_wdl_id(id):
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("select user_id from word_defn_lists where id=%s", [id])
+        return cur.fetchone()
+
+
+    @staticmethod
     def create(user_id, name):
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("insert into word_defn_lists (user_id, name) values (%s, %s) returning *", [user_id, name])
@@ -83,6 +92,7 @@ class WordDefnList():
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("delete from word_defn_lists where id=%s", [self.id])
 
+
 class WordDefn():
     def __init__(self, id, word, part_of_speech, defn, examples, user_id, create_time, update_time):
         self.id = id
@@ -95,11 +105,12 @@ class WordDefn():
         self.update_time = update_time
     
     @staticmethod
-    def create(word, defn, examples, user_id):
+    def create(word, pos, defn, examples, user_id):
         examples = str(examples)
         examples = examples.replace('[', '{').replace(']', '}').replace('\'', '\"')
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("insert into word_defns (word, defn, examples, user_id) values (%s, %s, %s, %s) returning *", [word, defn, examples, user_id])
+        print(pos)
+        cur.execute("insert into word_defns (word, part_of_speech, defn, examples, user_id) values (%s, %s, %s, %s, %s) returning *", [word, pos, defn, examples, user_id])
         d = cur.fetchone()
         return WordDefn(d["id"], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
 
@@ -112,6 +123,16 @@ class WordDefn():
             return None
         return WordDefn(d['id'], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
 
+    @staticmethod
+    def update(word, part_of_speech, defn, examples, word_defn_id):
+        examples = str(examples)
+        examples = examples.replace('[', '{').replace(']', '}').replace('\'', '\"')
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("update word_defns set word=%s, part_of_speech=%s, defn=%s, examples=%s where id=%s returning *", [word, part_of_speech, defn, examples, word_defn_id])
+        d = cur.fetchone()
+        return WordDefn(d["id"], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
+
+
 def map_word_defn_to_list(word_defn_id, word_defn_list_id):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("insert into word_defn_list_map (word_defn_id, word_defn_list_id) values (%s, %s)", [word_defn_id, word_defn_list_id])
@@ -120,3 +141,44 @@ def get_word_defns_from_list(word_defn_list_id):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select word_defn_id from word_defn_list_map where word_defn_list_id=%s", [word_defn_list_id])
     return cur.fetchall()
+
+def delete_map_of_word_defn_to_list(word_defn_id, word_defn_list_id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("delete from word_defn_list_map where word_defn_id=%s and word_defn_list_id=%s", [word_defn_id, word_defn_list_id])
+
+def delete_word_defn(word_defn_id):
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("delete from word_defns where id=%s", [word_defn_id])
+
+class PracticeSession():
+    def __init__(self, id, user_id, wdl_id, word_defn_ids, current_index, create_time, update_time):
+        self.id = id
+        self.user_id = user_id
+        self.wdl_id = wdl_id
+        self.word_defn_ids = word_defn_ids
+        self.create_time = create_time
+        self.update_time = update_time
+
+    @staticmethod
+    def create(user_id, wdl_id, word_defn_ids):
+        random.shuffle(word_defn_ids)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("insert into practice_sessions (user_id, wdl_id, word_defn_ids) values (%s, %s, %s) returning *", [user_id, wdl_id, word_defn_ids])
+        d = cur.fetchone()
+        return PracticeSession(d["id"], d["user_id"], d["wdl_id"], d["word_defn_ids"], d["current_index"], d["create_time"], d["update_time"])
+
+    @staticmethod
+    def get_by_id(session_id):
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute("select * from practice_sessions where id=%s", [session_id])
+        return cur.fetchone()
+
+
+class Feedback():
+    def __init__(self, id, user_id, word_defn_id, difficulty_level, create_time, update_time):
+        self.id = id
+        self.user_id = user_id
+        self.word_defn_id = word_defn_id
+        self.difficulty_level = difficulty_level
+        self.create_time = create_time
+        self.update_time = update_time
