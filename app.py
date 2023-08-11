@@ -1,8 +1,6 @@
 from flask import Flask, make_response, render_template, request, redirect
 app = Flask(__name__)
 app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
 
 from oxford import get_rand_word, look_up_word
 

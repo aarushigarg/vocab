@@ -4,8 +4,9 @@ import psycopg2
 import psycopg2.extras
 import os
 
-conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+conn = psycopg2.connect("host=rough-leaf-4031-db.flycast port=5432 dbname=vocabdb user=vocabuser password=vocabpass")
 conn.set_session(autocommit=True)
+print(conn.get_dsn_parameters())
 
 class User:
     def __init__(self, is_active, id, username, email, avatar):

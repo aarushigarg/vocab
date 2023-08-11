@@ -25,7 +25,7 @@ create table if not exists saved_words (
     create_time timestamp default now()
 );
 
-create unique index saved_words_idx on saved_words (user_id, word);
+create unique index if not exists saved_words_idx on saved_words (user_id, word);
 
 create table if not exists cached_words (
     word varchar(512) primary key,
@@ -71,7 +71,7 @@ create table if not exists practice_sessions (
     update_time timestamp default now()
 );
 
-create type recall_difficulty_level as enum ("easy", "difficult", "couldnt_recall")
+create type recall_difficulty_level as enum ('easy', 'difficult', 'couldnt_recall');
 create table if not exists feedback (
     id serial primary key,
     user_id int not null,
@@ -79,4 +79,4 @@ create table if not exists feedback (
     difficulty_level recall_difficulty_level not null,
     create_time timestamp default now(),
     update_time timestamp default now()
-)
+);

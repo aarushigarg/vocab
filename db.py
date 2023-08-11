@@ -3,7 +3,7 @@ import psycopg2.extras
 import os
 import json
 
-conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+conn = psycopg2.connect("host=rough-leaf-4031-db dbname=vocabdb user=vocabuser password=vocabpass")
 conn.set_session(autocommit=True)
 
 def get_word(word):
