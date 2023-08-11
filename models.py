@@ -4,9 +4,12 @@ import psycopg2
 import psycopg2.extras
 import os
 
-conn = psycopg2.connect("host=rough-leaf-4031-db.flycast port=5432 dbname=vocabdb user=vocabuser password=vocabpass")
-conn.set_session(autocommit=True)
-print(conn.get_dsn_parameters())
+def connectToDb():
+    conn = psycopg2.connect("host=rough-leaf-4031-db.flycast port=5432 dbname=vocabdb user=vocabuser password=vocabpass")
+    conn.set_session(autocommit=True)
+    return conn
+
+connectToDb()
 
 class User:
     def __init__(self, is_active, id, username, email, avatar):
@@ -22,6 +25,7 @@ class User:
         return self.id
 
 def account_finder_or_creater(email, avatar):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select * from users where email = %s", [email])
     user = cur.fetchone()
@@ -33,6 +37,7 @@ def account_finder_or_creater(email, avatar):
     return user_object
 
 def get_user_by_id(id):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select * from users where id = %s", [id])
     user = cur.fetchone()
@@ -51,6 +56,7 @@ class WordDefnList():
     
     @staticmethod
     def get_by_id(id):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("select * from word_defn_lists where id=%s", [id])
         d = cur.fetchone()
@@ -60,6 +66,7 @@ class WordDefnList():
 
     @staticmethod
     def get_by_user_id(user_id):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("select * from word_defn_lists where user_id=%s", [user_id])
         word_defn_lists = []
@@ -72,6 +79,7 @@ class WordDefnList():
 
     @staticmethod
     def get_user_by_wdl_id(id):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("select user_id from word_defn_lists where id=%s", [id])
         return cur.fetchone()
@@ -79,17 +87,20 @@ class WordDefnList():
 
     @staticmethod
     def create(user_id, name):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("insert into word_defn_lists (user_id, name) values (%s, %s) returning *", [user_id, name])
         d = cur.fetchone()
         return WordDefnList(d['id'], d['user_id'], d['name'], d["create_time"], d["update_time"])
 
     def update_name(self, new_name):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("update word_defn_lists set name=%s where id=%s", [new_name, self.id])
         self.name = new_name
 
     def delete(self):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("delete from word_defn_lists where id=%s", [self.id])
 
@@ -107,6 +118,7 @@ class WordDefn():
     
     @staticmethod
     def create(word, pos, defn, examples, user_id):
+        conn = connectToDb()
         examples = str(examples)
         examples = examples.replace('[', '{').replace(']', '}').replace('\'', '\"')
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -117,6 +129,7 @@ class WordDefn():
 
     @staticmethod
     def get_by_id(id):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("select * from word_defns where id=%s", [id])
         d = cur.fetchone()
@@ -126,6 +139,7 @@ class WordDefn():
 
     @staticmethod
     def update(word, part_of_speech, defn, examples, word_defn_id):
+        conn = connectToDb()
         examples = str(examples)
         examples = examples.replace('[', '{').replace(']', '}').replace('\'', '\"')
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -135,19 +149,23 @@ class WordDefn():
 
 
 def map_word_defn_to_list(word_defn_id, word_defn_list_id):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("insert into word_defn_list_map (word_defn_id, word_defn_list_id) values (%s, %s)", [word_defn_id, word_defn_list_id])
 
 def get_word_defns_from_list(word_defn_list_id):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select word_defn_id from word_defn_list_map where word_defn_list_id=%s", [word_defn_list_id])
     return cur.fetchall()
 
 def delete_map_of_word_defn_to_list(word_defn_id, word_defn_list_id):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("delete from word_defn_list_map where word_defn_id=%s and word_defn_list_id=%s", [word_defn_id, word_defn_list_id])
 
 def delete_word_defn(word_defn_id):
+    conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("delete from word_defns where id=%s", [word_defn_id])
 
@@ -162,6 +180,7 @@ class PracticeSession():
 
     @staticmethod
     def create(user_id, wdl_id, word_defn_ids):
+        conn = connectToDb()
         random.shuffle(word_defn_ids)
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("insert into practice_sessions (user_id, wdl_id, word_defn_ids) values (%s, %s, %s) returning *", [user_id, wdl_id, word_defn_ids])
@@ -170,6 +189,7 @@ class PracticeSession():
 
     @staticmethod
     def get_by_id(session_id):
+        conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute("select * from practice_sessions where id=%s", [session_id])
         return cur.fetchone()

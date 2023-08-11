@@ -87,7 +87,7 @@ def save_word():
     word = request.form.get("word", "")
     command = request.form.get("command", "")
     user_id = current_user.id
-    if command == "save":
+    if command == "Save":
         save_word_for_user(user_id, word)
     else:
         unsave_word_for_user(user_id, word)
@@ -232,3 +232,6 @@ def word_defn_list_practice(wdl_id, session_id):
     wdl = WordDefnList.get_by_id(wdl_id)
     session = PracticeSession.get_by_id(session_id)
     return render_template("wdl_practice.html", wdl=wdl, session=session)
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8080)
