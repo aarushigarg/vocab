@@ -4,7 +4,7 @@ app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
 
 from oxford import get_rand_word, look_up_word
 
-from db import save_word_for_user, unsave_word_for_user, get_saved_words, word_saved_by_user_or_not
+from db import save_word_for_user, unsave_word_for_user, get_saved_words, is_word_saved_by_user
 
 from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list, delete_map_of_word_defn_to_list, delete_word_defn, PracticeSession, Feedback
 
@@ -45,7 +45,7 @@ def home():
 def word(the_word):
     word_meaning = look_up_word(the_word)
     display_word = the_word.replace("_", " ")
-    word_save_status = word_saved_by_user_or_not(current_user.id, display_word)
+    word_save_status = is_word_saved_by_user(current_user.id, display_word)
     return render_template("word_display.html", word=display_word, word_meaning=word_meaning, word_save_status=word_save_status)
 
 
@@ -87,14 +87,13 @@ def save_word():
     word = request.form.get("word", "")
     command = request.form.get("command", "")
     user_id = current_user.id
-    if command == "Save":
+    if command == "save":
         save_word_for_user(user_id, word)
     else:
         unsave_word_for_user(user_id, word)
     return ""
 
-
-#shows the list of definitions
+#shows a list of definitions
 @app.route("/word-definition-list/<wdl_id>")
 def word_defn_list(wdl_id):
     wdl = WordDefnList.get_by_id(wdl_id)
@@ -107,7 +106,10 @@ def word_defn_list(wdl_id):
     for word_defn_id in word_defn_ids:
         word_defns.append(WordDefn.get_by_id(word_defn_id))
 
-    return render_template("word_defn_list.html", wdl=wdl, word_defns=word_defns)
+    if wdl.getName() == "My saved words":
+        return render_template("my_saved_words.html", wdl=wdl, word_defns=word_defns)
+    else:
+        return render_template("word_defn_list.html", wdl=wdl, word_defns=word_defns)
 
 
 #renames the list
@@ -148,13 +150,18 @@ def word_defn_list_create():
         wdl = WordDefnList.create(current_user.id, name)
         return redirect(f"/word-definition-list/{wdl.id}")
 
-
-#adds a word definition to a list
+#TODO
+#adds an existing word definition to a list
 @app.route("/word-definition-list/<wdl_id>/add", methods=['GET', 'POST'])
 def word_defn_list_add(wdl_id):
+    pass
+
+#adds a custom word definition to a list
+@app.route("/word-definition-list/<wdl_id>/add-custom", methods=['GET', 'POST'])
+def word_defn_list_add_custom(wdl_id):
     wdl = WordDefnList.get_by_id(wdl_id)
     if request.method == "GET":
-        return render_template("wdl_add.html", wdl=wdl)
+        return render_template("wdl_add_custom.html", wdl=wdl)
     else:
         word = request.form.get("word", "")
         pos = request.form.get("pos", "")
@@ -173,7 +180,7 @@ def word_defn_list_add(wdl_id):
 
         word_defn = WordDefn.create(word, pos, defn, examples, current_user.id)
         map_word_defn_to_list(word_defn.id, wdl_id)
-        return render_template("wdl_add.html", wdl=wdl)
+        return render_template("wdl_add_custom.html", wdl=wdl)
 
 
 @app.route("/word-definition/<wdl_id>/<word_defn_id>/edit", methods=['GET', 'POST'])

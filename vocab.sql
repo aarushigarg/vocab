@@ -34,7 +34,7 @@ create table if not exists cached_words (
     update_time timestamp default now()
 );
 
-create type pos as enum ('noun', 'pronoun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection');
+create type pos as enum ('noun', 'pronoun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection', 'phrase');
 create table if not exists word_defns (
     id serial primary key,
     word varchar(512) not null,

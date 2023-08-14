@@ -1,19 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}{{wdl.name}}{% endblock %}
+{% block title %}My saved words{% endblock %}
 
 {% block content %}
 
 <h1 class="title">{{wdl.name}}</h1>
 
-<a class="button" href="/word-definition-list/{{wdl.id}}/rename">Rename</a>
-<a class="button" href="/word-definition-list/{{wdl.id}}/delete">Delete</a>
-<br><br>
-
-<a class="button" href="/word-definition-list/{{wdl.id}}/add-custom">Add a custom definition</a>
-<br><br>
-
-<a class="button" href="/word-definition-list/{{wdl.id}}/launch-practice">Practice</a>
+<a class="button" href="/word-definition-list/{{wdl.id}}/add">Add a word definition</a>
 <br><br>
 
 <div>

@@ -53,6 +53,9 @@ class WordDefnList():
         self.name = name
         self.create_time = create_time
         self.update_time = update_time
+
+    def getName(self):
+        return self.name
     
     @staticmethod
     def get_by_id(id):
@@ -72,7 +75,7 @@ class WordDefnList():
         word_defn_lists = []
         d = cur.fetchone()
         while d:
-            wdl = WordDefnList(d['id'], d['user_id'], d['name'], d["create_time"], d["update_time"])
+            wdl = WordDefnList(d["id"], d['user_id'], d['name'], d["create_time"], d["update_time"])
             word_defn_lists.append(wdl)
             d = cur.fetchone()
         return word_defn_lists
@@ -135,7 +138,7 @@ class WordDefn():
         d = cur.fetchone()
         if not d:
             return None
-        return WordDefn(d['id'], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
+        return WordDefn(d["id"], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
 
     @staticmethod
     def update(word, part_of_speech, defn, examples, word_defn_id):
@@ -175,6 +178,7 @@ class PracticeSession():
         self.user_id = user_id
         self.wdl_id = wdl_id
         self.word_defn_ids = word_defn_ids
+        self.current_index = current_index
         self.create_time = create_time
         self.update_time = update_time
 
