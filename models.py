@@ -12,17 +12,27 @@ def connectToDb():
 connectToDb()
 
 class User:
-    def __init__(self, is_active, id, username, email, avatar):
+    def __init__(self, is_active, table_id, username, email, avatar, id=""):
         self.is_authenticated = True
         self.is_anonymous = False
-        self.is_active = is_active
         self.id = id
+        self.is_active = is_active
+        self.table_id = table_id
         self.username = username
         self.email = email
         self.avatar = avatar
 
+    def set_id(self, id):
+        self.id = id
+
     def get_id(self):
         return self.id
+
+    def get_email(self):
+        return self.email
+    
+    def get_table_id(self):
+        return self.table_id
 
 def account_finder_or_creater(email, avatar):
     conn = connectToDb()
@@ -32,19 +42,25 @@ def account_finder_or_creater(email, avatar):
     if not user:
         cur.execute("insert into users (username, email, avatar) values (%s, %s, %s) returning *", [email, email, avatar])
         user = cur.fetchone()
-        cur.execute("insert into word_defn_lists (user_id, name) values (%s, %s)", [user["id"], "My saved words"])
-    user_object = User(user["is_active"], user["id"], user["username"], user["email"], user["avatar"])
+    user_object = User(user["is_active"], user["id"], user["username"], user["email"], user["avatar"])  #from table
     return user_object
 
 def get_user_by_id(id):
     conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute("select * from users where id = %s", [id])
+    cur.execute("select * from users where user_id = '%s'", [id])
     user = cur.fetchone()
-    user_object = User(user["is_active"], user["id"], user["username"], user["email"], user["avatar"])
+    if not user:
+        return None
+    user_object = User(user["is_active"], user["id"], user["username"], user["email"], user["avatar"], user["user_id"])
     return user_object
 
-
+def add_user_id_to_user(user_id, user_object):
+    conn = connectToDb()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    user_object.set_id(user_id)
+    cur.execute("update users set user_id = '%s' where id = %s", [user_id, user_object.get_table_id()])
+    cur.execute("insert into word_defn_lists (user_id, name) values ('%s', %s)", [user_id, "My saved words"])
 
 class WordDefnList():
     def __init__(self, id, user_id, name, create_time, update_time):
@@ -71,7 +87,7 @@ class WordDefnList():
     def get_by_user_id(user_id):
         conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("select * from word_defn_lists where user_id=%s", [user_id])
+        cur.execute("select * from word_defn_lists where user_id='%s'", [user_id])
         word_defn_lists = []
         d = cur.fetchone()
         while d:
@@ -92,7 +108,7 @@ class WordDefnList():
     def create(user_id, name):
         conn = connectToDb()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("insert into word_defn_lists (user_id, name) values (%s, %s) returning *", [user_id, name])
+        cur.execute("insert into word_defn_lists (user_id, name) values ('%s', %s) returning *", [user_id, name])
         d = cur.fetchone()
         return WordDefnList(d['id'], d['user_id'], d['name'], d["create_time"], d["update_time"])
 
@@ -146,7 +162,7 @@ class WordDefn():
         examples = str(examples)
         examples = examples.replace('[', '{').replace(']', '}').replace('\'', '\"')
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("update word_defns set word=%s, part_of_speech=%s, defn=%s, examples=%s where id=%s returning *", [word, part_of_speech, defn, examples, word_defn_id])
+        cur.execute("update word_defns set (word, part_of_speech, defn, examples, user_id) values (%s, %s, %s, %s, %s) returning *", [word, part_of_speech, defn, examples, word_defn_id])
         d = cur.fetchone()
         return WordDefn(d["id"], d["word"], d["part_of_speech"], d["defn"], d["examples"], d["user_id"], d["create_time"], d["update_time"])
 
@@ -187,7 +203,7 @@ class PracticeSession():
         conn = connectToDb()
         random.shuffle(word_defn_ids)
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("insert into practice_sessions (user_id, wdl_id, word_defn_ids) values (%s, %s, %s) returning *", [user_id, wdl_id, word_defn_ids])
+        cur.execute("insert into practice_sessions (user_id, wdl_id, word_defn_ids) values ('%s', %s, %s) returning *", [user_id, wdl_id, word_defn_ids])
         d = cur.fetchone()
         return PracticeSession(d["id"], d["user_id"], d["wdl_id"], d["word_defn_ids"], d["current_index"], d["create_time"], d["update_time"])
 
