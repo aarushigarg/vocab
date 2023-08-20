@@ -9,7 +9,6 @@ grant all privileges on all sequences in schema public to vocabuser;
 
 create table if not exists users (
     id serial primary key,
-    user_id text unique,
     username varchar(32) unique not null,
     email varchar(512) unique not null,
     avatar varchar(2048) not null,
@@ -21,7 +20,7 @@ create table if not exists users (
 
 create table if not exists saved_words (
     id serial primary key,
-    user_id text not null,
+    user_id int not null,
     word varchar(256) not null,
     create_time timestamp default now()
 );
@@ -42,14 +41,14 @@ create table if not exists word_defns (
     part_of_speech pos not null,
     defn varchar(8192) not null,
     examples varchar(8192)[],
-    user_id text,
+    user_id int,
     create_time timestamp default now(),
     update_time timestamp default now()
 );
 
 create table if not exists word_defn_lists (
     id serial primary key,
-    user_id text not null,
+    user_id int not null,
     name varchar(512) not null,
     create_time timestamp default now(),
     update_time timestamp default now()
@@ -64,7 +63,7 @@ create table if not exists word_defn_list_map (
 
 create table if not exists practice_sessions (
     id serial primary key,
-    user_id text not null,
+    user_id int not null,
     wdl_id int not null,
     word_defn_ids int [] not null,
     current_index int default 0,
@@ -75,7 +74,7 @@ create table if not exists practice_sessions (
 create type recall_difficulty_level as enum ('easy', 'difficult', 'couldnt_recall');
 create table if not exists feedback (
     id serial primary key,
-    user_id text not null,
+    user_id int not null,
     word_defn_id int not null,
     difficulty_level recall_difficulty_level not null,
     create_time timestamp default now(),

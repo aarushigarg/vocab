@@ -6,7 +6,7 @@ from oxford import get_rand_word, look_up_word
 
 from db import save_word_for_user, unsave_word_for_user, get_saved_words, is_word_saved_by_user
 
-from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list, delete_map_of_word_defn_to_list, delete_word_defn, PracticeSession, Feedback, add_user_id_to_user
+from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list, delete_map_of_word_defn_to_list, delete_word_defn, PracticeSession, Feedback
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -70,8 +70,6 @@ def login():
         user = account_finder_or_creater(idinfo["email"], idinfo["picture"])
         resp = make_response(redirect("/"))
         login_user(user, remember=True)
-        user_id = current_user.id
-        add_user_id_to_user(user_id, user)
         return resp
 
 
