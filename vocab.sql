@@ -56,8 +56,8 @@ create table if not exists word_defn_lists (
 
 create table if not exists word_defn_list_map (
     word_defn_list_id int not null,
-    word_defn_id int,
-    cached_word_id int,
+    word_defn_id int not null,
+    primary key(word_defn_list_id, word_defn_id),
     create_time timestamp default now()
 );
 

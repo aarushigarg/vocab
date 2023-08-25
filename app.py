@@ -4,7 +4,7 @@ app.secret_key = b'd\x81\xc3i4b\xca\xc9D\xd9\x05\x12V\xa0\x031'
 
 from oxford import get_rand_word, look_up_word
 
-from db import save_word_for_user, unsave_word_for_user, get_saved_words, is_word_saved_by_user
+from db import save_word_for_user, unsave_word_for_user, get_saved_words, is_word_saved_by_user, get_word
 
 from models import account_finder_or_creater, get_user_by_id, WordDefnList, WordDefn, map_word_defn_to_list, get_word_defns_from_list, delete_map_of_word_defn_to_list, delete_word_defn, PracticeSession, Feedback
 
@@ -97,18 +97,26 @@ def save_word():
 @app.route("/word-definition-list/<wdl_id>")
 def word_defn_list(wdl_id):
     wdl = WordDefnList.get_by_id(wdl_id)
-    word_defn_ids = get_word_defns_from_list(int(wdl_id))
-
-    for i in range(len(word_defn_ids)):
-        word_defn_ids[i] = word_defn_ids[i][0]
-
-    word_defns = []
-    for word_defn_id in word_defn_ids:
-        word_defns.append(WordDefn.get_by_id(word_defn_id))
 
     if wdl.getName() == "My saved words":
+        words = get_saved_words(current_user.id)
+        for i in range(len(words)):
+            words[i] = words[i][0]
+
+        word_defns = []
+        for word in words:
+            word_defns.append(get_word(word))
+
         return render_template("my_saved_words.html", wdl=wdl, word_defns=word_defns)
     else:
+        word_defn_ids = get_word_defns_from_list(int(wdl_id))
+        for i in range(len(word_defn_ids)):
+            word_defn_ids[i] = word_defn_ids[i][0]
+
+        word_defns = []
+        for word_defn_id in word_defn_ids:
+            word_defns.append(WordDefn.get_by_id(word_defn_id))
+
         return render_template("word_defn_list.html", wdl=wdl, word_defns=word_defns)
 
 
@@ -221,8 +229,11 @@ def word_defn_delete(wdl_id, word_defn_id):
     if request.method == "GET":
         return render_template("word_defn_delete.html", wdl=wdl, word_defn=word_defn)
     else:
-        delete_map_of_word_defn_to_list(word_defn_id, wdl_id)
-        delete_word_defn(word_defn_id)
+        if wdl.name == "My saved words":
+            unsave_word_for_user(current_user.id, word_defn.word)
+        else:
+            delete_map_of_word_defn_to_list(word_defn_id, wdl_id)
+            delete_word_defn(word_defn_id)
         return redirect(f"/word-definition-list/{wdl.id}")
 
 

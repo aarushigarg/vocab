@@ -46,9 +46,6 @@ def save_word_for_user(user_id, word):
     cur.execute("select * from saved_words where user_id = %s and word = %s", [user_id, word])
     if not cur.fetchone():
         cur.execute("insert into saved_words (user_id, word) values (%s, %s)", [user_id, word])
-    saved_words_list_id = get_saved_words_list_id_by_user_id(user_id)
-    word_defn_id = get_word_defn_id_by_word(word)
-    models.map_word_defn_to_list(word_defn_id, saved_words_list_id)
 
 def unsave_word_for_user(user_id, word):
     conn = connectToDb()
@@ -56,16 +53,12 @@ def unsave_word_for_user(user_id, word):
     cur.execute("select * from saved_words where user_id = %s and word = %s", [user_id, word])
     if cur.fetchone():
         cur.execute("delete from saved_words where user_id = %s and word = %s", [user_id, word])
-    saved_words_list_id = get_saved_words_list_id_by_user_id(user_id)
-    word_defn_id = get_word_defn_id_by_word(word)
-    models.delete_map_of_word_defn_to_list(word_defn_id, saved_words_list_id)
 
 def get_saved_words(user_id):
     conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select word from saved_words where user_id = %s", [user_id])
     users_saved_words = cur.fetchall()
-    users_saved_words = users_saved_words
     return users_saved_words
 
 def is_word_saved_by_user(user_id, word):

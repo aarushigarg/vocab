@@ -158,7 +158,7 @@ class WordDefn():
 def map_word_defn_to_list(word_defn_id, word_defn_list_id):
     conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute("insert into word_defn_list_map (word_defn_list_id, word_defn_id) values (%s, %s)", [word_defn_id, word_defn_list_id])
+    cur.execute("insert into word_defn_list_map (word_defn_list_id, word_defn_id) values (%s, %s)", [word_defn_list_id, word_defn_id])
 
 def get_word_defns_from_list(word_defn_list_id):
     conn = connectToDb()
@@ -166,7 +166,7 @@ def get_word_defns_from_list(word_defn_list_id):
     cur.execute("select word_defn_id from word_defn_list_map where word_defn_list_id=%s", [word_defn_list_id])
     return cur.fetchall()
 
-def delete_map_of_word_defn_to_list(word_defn_id, word_defn_list_id):
+def delete_map_of_word_defn_to_list(word_defn_id, word_defn_list_id, word_type):
     conn = connectToDb()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("delete from word_defn_list_map where word_defn_id=%s and word_defn_list_id=%s", [word_defn_id, word_defn_list_id])

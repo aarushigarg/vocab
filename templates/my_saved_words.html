@@ -9,24 +9,25 @@
 <a class="button" href="/word-definition-list/{{wdl.id}}/add">Add a word definition</a>
 <br><br>
 
+<a class="button" href="/word-definition-list/{{wdl.id}}/launch-practice">Practice</a>
+<br><br>
+
 <div>
     {% for word_defn in word_defns %}
-        {{word_defn.word}}
+        <b>Word: {{word_defn.word}}</b>
         <br>
-        {{word_defn.part_of_speech}}
+        POS: {{word_defn.part_of_speech}}
         <br>
-        {{word_defn.defn}}
+        Defn: {{word_defn.defn}}
         <br>
 
         {% for example in word_defn.examples %}
             {% if example|length %}
-                {{example}}
+                Example: {{example}}
                 <br>
             {% endif %}
         {% endfor %}
 
-        <a href="/word-definition/{{wdl.id}}/{{word_defn.id}}/edit">Edit</a>
-        <br>
         <a href="/word-definition/{{wdl.id}}/{{word_defn.id}}/delete">Delete</a>
         <br>
         <br>
