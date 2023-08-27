@@ -59,6 +59,8 @@ def get_saved_words(user_id):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("select word from saved_words where user_id = %s", [user_id])
     users_saved_words = cur.fetchall()
+    for i in range(len(users_saved_words)):
+        users_saved_words[i] = users_saved_words[i][0]
     return users_saved_words
 
 def is_word_saved_by_user(user_id, word):

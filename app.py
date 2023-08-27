@@ -100,8 +100,6 @@ def word_defn_list(wdl_id):
 
     if wdl.getName() == "My saved words":
         words = get_saved_words(current_user.id)
-        for i in range(len(words)):
-            words[i] = words[i][0]
 
         word_defns = []
         for word in words:
